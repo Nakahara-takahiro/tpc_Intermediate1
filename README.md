@@ -11,4 +11,4 @@
 - [bot3_template.py](./bot3_template.py)（クライアント側穴抜きプログラム） 
 - [bot3.py](./bot3.py)（クライアント側自動応答プログラム）
 ## 第4回 AI応答チャット機能（2026年3月27日）
-- aibot4.py
+- [aibot4_template.py](./aibot4_template.py)（生成AIチャットボットのクライアント側自動応答プログラム）
