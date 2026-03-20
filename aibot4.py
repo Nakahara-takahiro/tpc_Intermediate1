@@ -1,13 +1,12 @@
 import socket
 import threading
-import google.generativeai as genai
+from openai import OpenAI
 
-# Gemini APIの設定(無料枠)
-# ※事前に pip install google-generativeai が必要
-# ※APIキーは https://makersuite.google.com/app/apikey から取得
+# OpenAI APIの設定
+# ※事前に pip install openai が必要
+# ※APIキーは https://platform.openai.com/api-keys から取得
 API_KEY = "ここにAPIキーを入力"  # 各自で取得したキーを入れる
-genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+openai_client = OpenAI(api_key=API_KEY)
 
 # サーバーの設定
 HOST = '127.0.0.1'
@@ -31,9 +30,14 @@ def receive():
                 
                 # AIに質問
                 try:
-                    prompt = f"{personality}\n質問: {message}"
-                    response = model.generate_content(prompt)
-                    reply = response.text
+                    response = openai_client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {"role": "system", "content": personality},
+                            {"role": "user", "content": message}
+                        ]
+                    )
+                    reply = response.choices[0].message.content
                 except:
                     reply = "ごめん、ちょっと考え中..."
                 
