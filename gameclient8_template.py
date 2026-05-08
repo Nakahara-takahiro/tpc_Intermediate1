@@ -64,8 +64,9 @@ thread.daemon = True
 thread.start()
 
 # 定期的に位置を更新・送信
-def update_position():
-    global my_x, my_y
+"""
+資料を見て追加する
+"""
     
     # キー状態に応じて移動
     if keys_pressed["Left"]:
@@ -85,24 +86,17 @@ def update_position():
         if my_y > 385:
             my_y = 385
     
-    # 画面更新
-    canvas.coords(my_player, my_x - 15, my_y - 15, my_x + 15, my_y + 15)
-    canvas.coords(enemy_player, enemy_x - 15, enemy_y - 15, enemy_x + 15, enemy_y + 15)
-    
-    # 位置を送信(定期的に)
-    try:
-        opponent.send(f"{my_x},{my_y}".encode('utf-8'))
-    except:
-        pass
-    
-    # 50msごとに実行
-    root.after(50, update_position)
+"""
+資料を見て追加する
+"""
 
 # キーイベント
 root.bind("<KeyPress>", key_press)
 root.bind("<KeyRelease>", key_release)
 
 # 位置更新開始
-update_position()
+"""
+資料を見て追加する
+"""
 
 root.mainloop()

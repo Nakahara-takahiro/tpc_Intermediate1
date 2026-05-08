@@ -2,19 +2,9 @@ import tkinter as tk
 import socket
 import threading
 
-# 相手(ホスト)のIPアドレスを入力
-opponent_ip = input("相手(ホスト)のIPアドレスを入力: ")
-PORT = 12345
-
-# 相手に接続
-opponent = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-opponent.connect((opponent_ip, PORT))
-print(f"{opponent_ip} に接続しました!")
-
-import tkinter as tk
-import socket
-import threading
-
+"""
+資料を見て追加する
+"""
 
 root = tk.Tk()
 root.title("対戦シューティング")
@@ -53,8 +43,9 @@ def receive():
             message = opponent.recv(1024).decode('utf-8')
             if message:
                 x, y = message.split(",")
-                enemy_x = 400 - int(x)
-                enemy_y = 400 - int(y)  # 上下反転
+                """
+                資料を見て追加する
+                """
         except:
             break
 
@@ -91,7 +82,9 @@ def update_position():
     
     # 位置を送信(定期的に)
     try:
-        opponent.send(f"{my_x},{my_y}".encode('utf-8'))
+        """
+        資料を見て追加する
+        """
     except:
         pass
     
