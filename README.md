@@ -38,6 +38,6 @@
 - [対戦型に改造テンプレート（クライアント側）](./gameclient8_template.py)
 
 ## 第9回 対戦機能の実装（2026年6月12日）
-- [Server側接続プログラム]()
-- [Client側接続プログラム]()
+- [Server側接続プログラム](./gameserver9.py)
+- [Client側接続プログラム](./gameclient9.py)
 - [対戦型プログラムのゲーム本体を切り出し](./gamemain9.py)
