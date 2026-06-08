@@ -110,10 +110,17 @@ def start_game(opponent, title="対戦シューティング"):
             canvas.coords(my_player, my_x - 15, my_y - 15, my_x + 15, my_y + 15)
             send(f"POS|{my_x}|{my_y}")
 
-            # 自分の弾は移動させるだけ(命中判定は弾を受け取った相手側で行う)
+            # 自分の弾を移動させる(ダメージ判定は弾を受け取った相手側で行うが、
+            # 自分の画面で敵とすり抜けないよう、見た目上の衝突でも消す)
             for bullet in bullets[:]:
                 bullet["y"] -= 10
                 canvas.coords(bullet["obj"], bullet["x"] - 5, bullet["y"] - 5, bullet["x"] + 5, bullet["y"] + 5)
+
+                distance = ((bullet["x"] - enemy_x) ** 2 + (bullet["y"] - enemy_y) ** 2) ** 0.5
+                if distance < 20:
+                    canvas.delete(bullet["obj"])
+                    bullets.remove(bullet)
+                    continue
 
                 if bullet["y"] < 0:
                     canvas.delete(bullet["obj"])
