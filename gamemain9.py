@@ -83,8 +83,12 @@ def start_game(opponent, title="対戦シューティング"):
     def update():
         nonlocal my_x, my_hp, enemy_hp, game_over
 
+        # enemy_x/enemy_y は受信スレッドが随時書き換えるため、1フレーム内で
+        # 描画と当たり判定の値がズレない(すり抜けが起きない)よう、ここで一度だけ取得して使い回す
+        ex_now, ey_now = enemy_x, enemy_y
+
         # 受信した相手の位置とHPをCanvasに反映(描画はメインスレッドでのみ行う)
-        canvas.coords(enemy_player, enemy_x - 15, enemy_y - 15, enemy_x + 15, enemy_y + 15)
+        canvas.coords(enemy_player, ex_now - 15, ey_now - 15, ex_now + 15, ey_now + 15)
         canvas.itemconfig(hp_text, text=f"自分:{my_hp} 相手:{enemy_hp}")
 
         if enemy_hp <= 0 and not game_over:
@@ -116,7 +120,7 @@ def start_game(opponent, title="対戦シューティング"):
                 bullet["y"] -= 10
                 canvas.coords(bullet["obj"], bullet["x"] - 5, bullet["y"] - 5, bullet["x"] + 5, bullet["y"] + 5)
 
-                distance = ((bullet["x"] - enemy_x) ** 2 + (bullet["y"] - enemy_y) ** 2) ** 0.5
+                distance = ((bullet["x"] - ex_now) ** 2 + (bullet["y"] - ey_now) ** 2) ** 0.5
                 if distance < 20:
                     canvas.delete(bullet["obj"])
                     bullets.remove(bullet)
