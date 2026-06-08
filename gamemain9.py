@@ -81,7 +81,7 @@ def start_game(opponent, title="対戦シューティング"):
         send(f"SHOOT|{my_x}|{my_y - 15}")
 
     def update():
-        nonlocal my_x, enemy_hp, game_over
+        nonlocal my_x, my_hp, enemy_hp, game_over
 
         # 受信した相手の位置とHPをCanvasに反映(描画はメインスレッドでのみ行う)
         canvas.coords(enemy_player, enemy_x - 15, enemy_y - 15, enemy_x + 15, enemy_y + 15)
