@@ -42,7 +42,7 @@ def start_game(opponent, title="対戦シューティング"):
             pass
 
     def receive():
-        nonlocal enemy_x, enemy_y, my_hp, game_over
+        nonlocal enemy_x, enemy_y, enemy_hp, game_over
         buffer = ""
         while True:
             try:
@@ -60,9 +60,10 @@ def start_game(opponent, title="対戦シューティング"):
                         enemy_x = 400 - int(data[1])
                         enemy_y = 400 - int(data[2])  # 上下左右反転して相手視点に合わせる
                     elif data[0] == "HIT":
-                        my_hp -= 10
-                        if my_hp < 0:
-                            my_hp = 0
+                        # 相手が自分の弾に当たったという通知なので、相手のHP表示を更新する
+                        enemy_hp -= 10
+                        if enemy_hp < 0:
+                            enemy_hp = 0
                     elif data[0] == "SHOOT":
                         incoming_shots.append((400 - int(data[1]), 400 - int(data[2])))
             except:
@@ -86,9 +87,9 @@ def start_game(opponent, title="対戦シューティング"):
         canvas.coords(enemy_player, enemy_x - 15, enemy_y - 15, enemy_x + 15, enemy_y + 15)
         canvas.itemconfig(hp_text, text=f"自分:{my_hp} 相手:{enemy_hp}")
 
-        if my_hp <= 0 and not game_over:
+        if enemy_hp <= 0 and not game_over:
             game_over = True
-            canvas.create_text(200, 200, text="負けました!", fill="red", font=("Arial", 30))
+            canvas.create_text(200, 200, text="勝ちました!", fill="green", font=("Arial", 30))
 
         # 相手が撃った弾を自分側の画面に生成する
         for ex, ey in incoming_shots:
@@ -109,32 +110,34 @@ def start_game(opponent, title="対戦シューティング"):
             canvas.coords(my_player, my_x - 15, my_y - 15, my_x + 15, my_y + 15)
             send(f"POS|{my_x}|{my_y}")
 
+            # 自分の弾は移動させるだけ(命中判定は弾を受け取った相手側で行う)
             for bullet in bullets[:]:
                 bullet["y"] -= 10
                 canvas.coords(bullet["obj"], bullet["x"] - 5, bullet["y"] - 5, bullet["x"] + 5, bullet["y"] + 5)
-
-                distance = ((bullet["x"] - enemy_x) ** 2 + (bullet["y"] - enemy_y) ** 2) ** 0.5
-                if distance < 20:
-                    enemy_hp -= 10
-                    if enemy_hp < 0:
-                        enemy_hp = 0
-                    canvas.itemconfig(hp_text, text=f"自分:{my_hp} 相手:{enemy_hp}")
-                    send("HIT|0|0")
-                    canvas.delete(bullet["obj"])
-                    bullets.remove(bullet)
-                    if enemy_hp <= 0 and not game_over:
-                        game_over = True
-                        canvas.create_text(200, 200, text="勝ちました!", fill="green", font=("Arial", 30))
-                    continue
 
                 if bullet["y"] < 0:
                     canvas.delete(bullet["obj"])
                     bullets.remove(bullet)
 
-        # 相手の弾を自分側の画面で下方向へ移動させる
+        # 相手の弾を自分側の画面で下方向へ移動させ、自分の正確な座標で命中判定する
         for bullet in enemy_bullets[:]:
             bullet["y"] += 10
             canvas.coords(bullet["obj"], bullet["x"] - 5, bullet["y"] - 5, bullet["x"] + 5, bullet["y"] + 5)
+
+            distance = ((bullet["x"] - my_x) ** 2 + (bullet["y"] - my_y) ** 2) ** 0.5
+            if distance < 20 and not game_over:
+                my_hp -= 10
+                if my_hp < 0:
+                    my_hp = 0
+                canvas.itemconfig(hp_text, text=f"自分:{my_hp} 相手:{enemy_hp}")
+                send("HIT|0|0")
+                canvas.delete(bullet["obj"])
+                enemy_bullets.remove(bullet)
+                if my_hp <= 0 and not game_over:
+                    game_over = True
+                    canvas.create_text(200, 200, text="負けました!", fill="red", font=("Arial", 30))
+                continue
+
             if bullet["y"] > 400:
                 canvas.delete(bullet["obj"])
                 enemy_bullets.remove(bullet)
